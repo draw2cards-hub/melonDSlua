@@ -450,7 +450,7 @@ void EmuInstance::inputProcess()
                 joyInputMask &= ~(1 << i);
     }
 
-    inputMask = keyInputMask & joyInputMask;
+    inputMask = keyInputMask & joyInputMask & luaInputMask.load();
 
     joyHotkeyMask = 0;
     if (joystick)

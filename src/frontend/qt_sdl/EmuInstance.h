@@ -20,6 +20,7 @@
 #define EMUINSTANCE_H
 
 #include <SDL2/SDL.h>
+#include <atomic>
 
 #include "Platform.h"
 #include "main.h"
@@ -379,6 +380,10 @@ private:
     std::shared_ptr<SDL_mutex> joyMutex;
 
     melonDS::u32 keyInputMask, joyInputMask;
+public:
+    // Buttons held by a Lua script (joypad.set); active-low like the masks above.
+    std::atomic<melonDS::u32> luaInputMask {0xFFF};
+private:
     melonDS::u32 keyHotkeyMask, joyHotkeyMask;
     melonDS::u32 hotkeyMask, lastHotkeyMask;
     melonDS::u32 hotkeyPress, hotkeyRelease;

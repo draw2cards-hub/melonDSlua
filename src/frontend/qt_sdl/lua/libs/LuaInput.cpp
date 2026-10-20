@@ -104,6 +104,31 @@ int Lua_getJoy(lua_State* L)
 }
 AddInputFunction(Lua_getJoy,getjoy);
 
+// joypad.set({A=true, Right=true, ...}): hold these DS buttons until the next call.
+// joypad.set({}) releases everything. Keys: A B Select Start Right Left Up Down R L X Y.
+int Lua_setJoy(lua_State* L)
+{
+    LuaBundle* bundle = get_bundle(L);
+    luaL_checktype(L, 1, LUA_TTABLE);
+    const char* keys[12] =
+    {//Buttons in order of mask.
+        "A","B","Select","Start",
+        "Right","Left","Up","Down",
+        "R","L","X","Y"
+    };
+    melonDS::u32 mask = 0xFFF;  // active-low: a cleared bit is a held button
+    for (int i = 0; i < 12; i++)
+    {
+        lua_getfield(L, 1, keys[i]);
+        if (lua_toboolean(L, -1))
+            mask &= ~(1u << i);
+        lua_pop(L, 1);
+    }
+    bundle->getEmuInstance()->luaInputMask = mask;
+    return 0;
+}
+AddInputFunction(Lua_setJoy,setjoy);
+
 int Lua_getJoyStick(lua_State* L)
 {
     LuaBundle* bundle = get_bundle(L);
@@ -124,5 +149,6 @@ namespace luaJoypadDefinitions
 #define AddJoypadFunction(functPointer,name)LuaFunctionRegister name(functPointer,#name,&joypadFunctions)
 
 AddJoypadFunction(luaInputDefinitions::Lua_getJoy,get);//aliase for input.getjoy
+AddJoypadFunction(luaInputDefinitions::Lua_setJoy,set);//aliase for input.setjoy
 
 }

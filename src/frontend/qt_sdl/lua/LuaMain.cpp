@@ -125,6 +125,7 @@ void LuaBundle::createLuaState()
 {
     if (!flagNewLua) return;
     overlays->clear();
+    emuInstance->luaInputMask = 0xFFF;              // a new script starts with no buttons held
     flagNewLua = false;
     luaState = nullptr;
     QByteArray fileName = luaDialog->currentScript.fileName().toLocal8Bit();
@@ -151,6 +152,7 @@ void LuaBundle::createLuaState()
 
 void LuaConsoleDialog::onStop()
 {
+    bundle->getEmuInstance()->luaInputMask = 0xFFF;   // release any buttons the script held
     if (bundle->getLuaState()) 
         bundle->flagStop = true;
 }
