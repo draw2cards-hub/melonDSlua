@@ -2,6 +2,8 @@
 #include "version.h"
 #include "Platform.h"
 #include <QCryptographicHash>
+#include "EmuThread.h"
+#include "EmuInstance.h"
 
 std::vector<luaL_Reg> clientFunctions;// list of registered lua_CFunctions for this library
 LuaLibrary clientLibrary("client",&clientFunctions);//adds "client" to the list of luaLibraries
@@ -122,6 +124,24 @@ int Lua_Framecount(lua_State* L)
     return 1;
 }
 AddEmuFunction(Lua_Framecount,framecount);
+
+// emu.importsave(path): same as File -> Import savefile, without the dialogs. Loads the save
+// file into this instance and resets the game. Returns true on success.
+int Lua_ImportSave(lua_State* L)
+{
+    LuaBundle* bundle = get_bundle(L);
+    const char* path = luaL_checkstring(L, 1);
+    auto emuInstance = bundle->getEmuInstance();
+    if (emuInstance->getCartType() == -1 || !Platform::FileExists(path))
+    {
+        lua_pushboolean(L, 0);
+        return 1;
+    }
+    int ok = emuInstance->getEmuThread()->importSavefile(QString::fromUtf8(path));
+    lua_pushboolean(L, ok != 0);
+    return 1;
+}
+AddEmuFunction(Lua_ImportSave,importsave);
 }
 
 std::vector<luaL_Reg> consoleFunctions;// list of registered lua_CFunctions for this library
