@@ -4,6 +4,7 @@
 #include <QCryptographicHash>
 #include "EmuThread.h"
 #include "EmuInstance.h"
+#include <QFile>
 
 std::vector<luaL_Reg> clientFunctions;// list of registered lua_CFunctions for this library
 LuaLibrary clientLibrary("client",&clientFunctions);//adds "client" to the list of luaLibraries
@@ -132,7 +133,7 @@ int Lua_ImportSave(lua_State* L)
     LuaBundle* bundle = get_bundle(L);
     const char* path = luaL_checkstring(L, 1);
     auto emuInstance = bundle->getEmuInstance();
-    if (emuInstance->getCartType() == -1 || !Platform::FileExists(path))
+    if (emuInstance->getCartType() == -1 || !QFile::exists(QString::fromUtf8(path)))
     {
         lua_pushboolean(L, 0);
         return 1;
