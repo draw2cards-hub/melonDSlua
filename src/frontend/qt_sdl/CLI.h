@@ -34,6 +34,8 @@ struct CommandLineOptions
     std::optional<QString> gbaRomArchivePath;
     bool fullscreen;
     bool boot;
+    int instances;              // --instances N: open N instances, each with the same ROM
+    QStringList luaScripts;     // --lua path (repeatable): the Nth one runs in instance N-1
 };
 
 extern CommandLineOptions* ManageArgs(QApplication& melon);

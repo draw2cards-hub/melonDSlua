@@ -56,6 +56,7 @@ public:
     Config::Table& getWindowConfig() { return windowCfg; }
 
     LuaConsoleDialog* getLuaDialog() {return luaDialog;}
+    void startLuaScript(const QString& path);   // --lua: open the Lua Script dialog and run this file
 
     int getWindowID() { return windowID; }
 

@@ -43,6 +43,8 @@ CommandLineOptions* ManageArgs(QApplication& melon)
 
     parser.addOption(QCommandLineOption({"b", "boot"}, "Whether to boot firmware on startup. Defaults to \"auto\" (boot if NDS rom given)", "auto/always/never", "auto"));
     parser.addOption(QCommandLineOption({"f", "fullscreen"}, "Start melonDS in fullscreen mode"));
+    parser.addOption(QCommandLineOption("instances", "Open this many instances (local multiplayer), each loading the given ROM", "count", "1"));
+    parser.addOption(QCommandLineOption("lua", "Run this Lua script; give it once per instance, in instance order", "script"));
 
 #ifdef ARCHIVE_SUPPORT_ENABLED
     parser.addOption(QCommandLineOption({"a", "archive-file"}, "Specify file to load inside an archive given (NDS)", "rom"));
@@ -54,6 +56,15 @@ CommandLineOptions* ManageArgs(QApplication& melon)
     CommandLineOptions* options = new CommandLineOptions;
 
     options->fullscreen = parser.isSet("fullscreen");
+
+    bool countok = false;
+    options->instances = parser.value("instances").toInt(&countok);
+    if (!countok || options->instances < 1)
+    {
+        Log(LogLevel::Error, "ERROR: --instances needs a number from 1 up\n");
+        exit(1);
+    }
+    options->luaScripts = parser.values("lua");
 
     QStringList posargs = parser.positionalArguments();
     switch (posargs.size())

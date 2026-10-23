@@ -422,6 +422,20 @@ int main(int argc, char** argv)
 
         if (options->fullscreen)
             win->toggleFullscreen();
+
+        // --instances: the same as Multiplayer -> Launch new instance, then loading the same ROM
+        for (int i = 1; i < options->instances; i++)
+        {
+            if (!createEmuInstance()) break;
+            emuInstances[i]->getMainWindow()->preloadROMs(dsfile, gbafile, options->boot);
+        }
+
+        // --lua: one script per instance, in order
+        for (int i = 0; i < options->luaScripts.size() && i < kMaxEmuInstances; i++)
+        {
+            if (emuInstances[i])
+                emuInstances[i]->getMainWindow()->startLuaScript(options->luaScripts[i]);
+        }
     }
 
     int ret = melon.exec();

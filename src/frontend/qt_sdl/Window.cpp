@@ -1736,6 +1736,20 @@ void MainWindow::onOpenLuaScript()
     connect(luaDialog,&LuaConsoleDialog::signalLuaLoadState,this,&MainWindow::onLuaLoadState);
 }
 
+void MainWindow::startLuaScript(const QString& path)
+{
+    // same as System -> Lua Script, then OpenLuaFile; the script starts on the next frame
+    QFileInfo file(path);
+    if (!file.exists())
+    {
+        printf("--lua: %s not found\n", path.toLocal8Bit().constData());
+        return;
+    }
+    onOpenLuaScript();
+    luaDialog->currentScript = file;
+    luaDialog->getLuaBundle()->flagNewLua = true;
+}
+
 void MainWindow::onEnableCheats(bool checked)
 {
     localCfg.SetBool("EnableCheats", checked);
